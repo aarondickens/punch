@@ -14,8 +14,9 @@ The GFW (Great Firewall of China) blocks or throttles access to a wide range of 
 2. Enables BBR congestion control for better throughput on lossy international links
 3. Generates all secrets (UUID, Reality keypair, short ID) — nothing hardcoded
 4. Deploys a [sing-box](https://github.com/SagerNet/sing-box) container on port 443 with host networking
-5. Generates a Clash Verge (mihomo) client config with DNS anti-poisoning and China-aware routing rules
-6. Prints a VLESS share link for mobile clients (Shadowrocket, v2rayN, NekoBox)
+5. Opens firewall port and prints a VLESS share link for mobile clients (Shadowrocket, v2rayN, NekoBox)
+
+`gen-clash.sh` runs locally on your Mac and combines credentials from multiple servers into a single Clash Verge (mihomo) config with purpose-based routing.
 
 Run the same script on multiple servers to create independent nodes for different purposes (dev tools, daily browsing, video streaming, etc.).
 
@@ -47,7 +48,7 @@ chmod +x deploy.sh
 sudo ./deploy.sh
 ```
 
-The script prints a VLESS share link and saves a single-node Clash config to `/opt/punch/clients/clash.yaml`.
+The script prints a VLESS share link and saves deployment credentials to `/opt/punch/deploy-output.txt`.
 
 ### Three servers (dev / work / video)
 
@@ -87,8 +88,6 @@ docker compose -f /opt/punch/docker-compose.yml down
 /opt/punch/
 ├── reality/
 │   └── config.json         # sing-box server config
-├── clients/
-│   └── clash.yaml          # Clash Verge client config
 ├── docker-compose.yml
 └── deploy-output.txt       # secrets and share link
 ```

@@ -72,7 +72,7 @@ BBR (Bottleneck Bandwidth and Round-trip propagation time) improves throughput o
 
 ## 7. Client Config: Clash Verge (mihomo)
 
-The script generates a Clash YAML config at `/opt/punch/clients/clash.yaml` designed for Clash Verge on macOS.
+The script generates a Clash YAML config designed for Clash Verge on macOS. In single-server mode, `deploy.sh` produced this directly; in the current multi-server setup, `gen-clash.sh` generates the combined config locally.
 
 ### 7.1 DNS Strategy
 
@@ -204,8 +204,6 @@ The fallback ordering in each group means if the dedicated node goes down, traff
 /opt/punch/
 ├── reality/
 │   └── config.json         # sing-box server config
-├── clients/
-│   └── clash.yaml          # Clash Verge client config
 ├── docker-compose.yml      # Container orchestration
 └── deploy-output.txt       # Secrets and share link
 ```
