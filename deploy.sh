@@ -26,6 +26,28 @@ BASE_DIR="/opt/punch"
 SINGBOX_IMAGE="ghcr.io/sagernet/sing-box:latest"
 REALITY_SNI="www.microsoft.com"
 
+# Parse --role flag
+ROLE=""
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --role)
+      ROLE="$2"
+      shift 2
+      ;;
+    *)
+      error "Unknown option: $1. Usage: deploy.sh [--role dev|work|video]"
+      ;;
+  esac
+done
+
+if [[ -n "$ROLE" ]]; then
+  case "$ROLE" in
+    dev|work|video) ;;
+    *) error "Invalid role: $ROLE. Must be one of: dev, work, video" ;;
+  esac
+  info "Role: $ROLE"
+fi
+
 # ─────────────────────────────────────────────
 # 2. Preflight checks
 # ─────────────────────────────────────────────
@@ -226,7 +248,7 @@ CLASH_HEAD
 
 cat >>"$BASE_DIR/clients/clash.yaml" <<EOF
 proxies:
-  - name: "${SERVER_IP}"
+  - name: "${NODE_NAME}"
     type: vless
     server: ${SERVER_IP}
     port: 443
@@ -245,7 +267,7 @@ proxy-groups:
   - name: Proxy
     type: select
     proxies:
-      - "${SERVER_IP}"
+      - "${NODE_NAME}"
       - DIRECT
 
 EOF
@@ -419,9 +441,11 @@ rules:
   - DOMAIN-SUFFIX,taobao.com,DIRECT
   - DOMAIN-SUFFIX,jd.com,DIRECT
   - DOMAIN-SUFFIX,sina.com.cn,DIRECT
+  - DOMAIN-SUFFIX,sohu.com,DIRECT
   - DOMAIN-SUFFIX,163.com,DIRECT
   - DOMAIN-SUFFIX,deepseek.com,DIRECT
   - DOMAIN-SUFFIX,qwen.ai,DIRECT
+  - DOMAIN-SUFFIX,douban.com,DIRECT
 
   # ─── China Direct ───
   - GEOSITE,cn,DIRECT
@@ -466,7 +490,8 @@ fi
 # ─────────────────────────────────────────────
 # 12. Share link
 # ─────────────────────────────────────────────
-VLESS_LINK="vless://${UUID}@${SERVER_IP}:443?encryption=none&flow=xtls-rprx-vision&security=reality&pbk=${REALITY_PUBLIC_KEY}&sid=${SHORT_ID}&sni=${REALITY_SNI}&fp=chrome&type=tcp#${SERVER_IP}"
+NODE_NAME="${ROLE:+${ROLE}-}${SERVER_IP}"
+VLESS_LINK="vless://${UUID}@${SERVER_IP}:443?encryption=none&flow=xtls-rprx-vision&security=reality&pbk=${REALITY_PUBLIC_KEY}&sid=${SHORT_ID}&sni=${REALITY_SNI}&fp=chrome&type=tcp#${NODE_NAME}"
 
 # ─────────────────────────────────────────────
 # 13. Console output
@@ -476,6 +501,9 @@ echo -e "${CYAN}═════════════════════�
 echo -e "${CYAN}        Punch VLESS-Reality — Deployment Complete          ${NC}"
 echo -e "${CYAN}════════════════════════════════════════════════════════════${NC}"
 echo ""
+if [[ -n "$ROLE" ]]; then
+echo -e "${GREEN}Role:${NC}                 ${ROLE}"
+fi
 echo -e "${GREEN}Server IP:${NC}            ${SERVER_IP}"
 echo -e "${GREEN}Port:${NC}                 443/tcp"
 echo -e "${GREEN}SNI:${NC}                  ${REALITY_SNI}"
@@ -503,6 +531,7 @@ echo -e "${CYAN}═════════════════════�
   echo "Punch VLESS-Reality — Deployment Summary"
   echo "Generated: $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
   echo ""
+  echo "Role:                 ${ROLE:-unset}"
   echo "Server IP:            ${SERVER_IP}"
   echo "Port:                 443/tcp"
   echo "SNI:                  ${REALITY_SNI}"

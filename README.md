@@ -39,14 +39,38 @@ UDP-based protocols (Hysteria2) were evaluated and dropped — the GFW throttles
 
 ## Quick Start
 
+### Single server
+
 ```bash
 # On a fresh Ubuntu 24.04 / Debian 12 server:
-curl -O https://raw.githubusercontent.com/<user>/punch/main/deploy.sh
 chmod +x deploy.sh
 sudo ./deploy.sh
 ```
 
-The script prints a VLESS share link and saves a Clash config to `/opt/punch/clients/clash.yaml`. Copy the Clash config to your Mac and import it into [Clash Verge](https://github.com/clash-verge-rev/clash-verge-rev).
+The script prints a VLESS share link and saves a single-node Clash config to `/opt/punch/clients/clash.yaml`.
+
+### Three servers (dev / work / video)
+
+Deploy each server with a role:
+
+```bash
+# Server 1 — dev tools (GitHub, Docker, npm, AI services)
+sudo ./deploy.sh --role dev
+
+# Server 2 — daily work (Google, social media, news)
+sudo ./deploy.sh --role work
+
+# Server 3 — video streaming (YouTube, Netflix, Twitch)
+sudo ./deploy.sh --role video
+```
+
+Then copy the three `deploy-output.txt` files to your Mac and generate a combined Clash config:
+
+```bash
+./gen-clash.sh dev-output.txt work-output.txt video-output.txt
+```
+
+This produces a single `clash.yaml` with three proxy groups (`Dev`, `Work`, `Video`) and rules that route traffic to the right node. Import it into [Clash Verge](https://github.com/clash-verge-rev/clash-verge-rev).
 
 ## Management
 
@@ -72,6 +96,5 @@ docker compose -f /opt/punch/docker-compose.yml down
 ## Limitations
 
 - Single IP per node — if the GFW blocks the server IP, the node is dead
-- No automatic failover between nodes — combine configs manually for multi-node setups
 - Client configs must be copied via scp (no subscription endpoint)
 - IPv4 only

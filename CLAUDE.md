@@ -14,19 +14,35 @@ punch — a VLESS-Reality proxy deployer. Single-script deployment on Ubuntu 24.
 ```
 punch/
 ├── deploy.sh      # Deployment script (run on target server as root)
+├── gen-clash.sh   # Generate combined Clash config from 3 deploy outputs (run locally)
 ├── CLAUDE.md      # This file
-└── DESIGN.md      # Architecture notes
+├── DESIGN.md      # Architecture notes
+└── README.md      # Project overview
 ```
 
 ## Deployment
 
 ```bash
-# Copy deploy.sh to an Ubuntu 24.04 server, then:
-chmod +x deploy.sh
+# Single server:
 sudo ./deploy.sh
+
+# With role (for multi-server setup):
+sudo ./deploy.sh --role dev
+sudo ./deploy.sh --role work
+sudo ./deploy.sh --role video
 ```
 
 Run the same script on each server. Each deployment generates its own UUID, Reality keypair, and short ID.
+The `--role` flag labels the node in deploy-output.txt and share links.
+
+## Multi-Server Client Config
+
+```bash
+# On your Mac, after collecting deploy-output.txt from each server:
+./gen-clash.sh dev-output.txt work-output.txt video-output.txt
+```
+
+Generates a combined `clash.yaml` with three proxy groups (Dev, Work, Video) and purpose-based routing rules.
 
 The script:
 1. Installs Docker + Compose if missing
