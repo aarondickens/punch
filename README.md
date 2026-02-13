@@ -46,21 +46,21 @@ chmod +x deploy.sh
 sudo ./deploy.sh
 ```
 
-The script prints a VLESS share link and saves a Clash config to `/opt/proxy/clients/clash.yaml`. Copy the Clash config to your Mac and import it into [Clash Verge](https://github.com/clash-verge-rev/clash-verge-rev).
+The script prints a VLESS share link and saves a Clash config to `/opt/punch/clients/clash.yaml`. Copy the Clash config to your Mac and import it into [Clash Verge](https://github.com/clash-verge-rev/clash-verge-rev).
 
 ## Management
 
 ```bash
-docker compose -f /opt/proxy/docker-compose.yml ps
-docker compose -f /opt/proxy/docker-compose.yml logs -f
-docker compose -f /opt/proxy/docker-compose.yml restart
-docker compose -f /opt/proxy/docker-compose.yml down
+docker compose -f /opt/punch/docker-compose.yml ps
+docker compose -f /opt/punch/docker-compose.yml logs -f
+docker compose -f /opt/punch/docker-compose.yml restart
+docker compose -f /opt/punch/docker-compose.yml down
 ```
 
 ## File Layout on Server
 
 ```
-/opt/proxy/
+/opt/punch/
 ├── reality/
 │   └── config.json         # sing-box server config
 ├── clients/
