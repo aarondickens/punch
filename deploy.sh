@@ -411,6 +411,18 @@ rules:
   # ─── Microsoft (mostly accessible, except LinkedIn above) ───
   - GEOSITE,microsoft,DIRECT
 
+  # ─── China Domestic Services ───
+  - DOMAIN-SUFFIX,baidu.com,DIRECT
+  - DOMAIN-SUFFIX,doubao.com,DIRECT
+  - DOMAIN-SUFFIX,tencent.com,DIRECT
+  - DOMAIN-SUFFIX,qq.com,DIRECT
+  - DOMAIN-SUFFIX,taobao.com,DIRECT
+  - DOMAIN-SUFFIX,jd.com,DIRECT
+  - DOMAIN-SUFFIX,sina.com.cn,DIRECT
+  - DOMAIN-SUFFIX,163.com,DIRECT
+  - DOMAIN-SUFFIX,deepseek.com,DIRECT
+  - DOMAIN-SUFFIX,qwen.ai,DIRECT
+
   # ─── China Direct ───
   - GEOSITE,cn,DIRECT
   - GEOIP,CN,DIRECT
