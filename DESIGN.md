@@ -132,15 +132,57 @@ reality-opts:
 
 ## 8. Multi-Server Usage
 
-The script is designed to be run identically on each server. Each run generates independent secrets. The intended setup:
+The script accepts an optional `--role` flag to label each node:
 
-| Server | Purpose | Example usage |
+```bash
+sudo ./deploy.sh --role dev    # Server 1
+sudo ./deploy.sh --role work   # Server 2
+sudo ./deploy.sh --role video  # Server 3
+```
+
+Valid roles: `dev`, `work`, `video`. The role is recorded in `deploy-output.txt` and used to name the proxy node in share links (e.g. `dev-1.2.3.4`). Without `--role`, the node is named by IP only.
+
+Each run generates independent secrets. The intended setup:
+
+| Server | Role | Traffic |
 |---|---|---|
-| Node 1 | Dev tooling | GitHub releases, Go modules, Docker images, npm packages |
-| Node 2 | Daily browsing | Google, Gmail, web search |
-| Node 3 | Video streaming | YouTube, Netflix, Twitch |
+| Node 1 | `dev` | AI services, GitHub, package registries, Cloud/CDN, Stack Overflow, HuggingFace |
+| Node 2 | `work` | Google, social media, news, Wikipedia, general browsing |
+| Node 3 | `video` | YouTube, Netflix, Spotify, Twitch, Disney+, HBO, Vimeo |
 
-Each server produces its own `clash.yaml`. The user imports all three into Clash Verge and manually assigns traffic as needed (or combines them into a single config with proxy groups).
+### 8.1 Combined Client Config: gen-clash.sh
+
+`deploy.sh` still generates a single-node `clash.yaml` per server (useful for quick testing). For the three-server setup, `gen-clash.sh` runs locally on the user's Mac and produces a combined config:
+
+```bash
+./gen-clash.sh dev-output.txt work-output.txt video-output.txt
+# → clash.yaml
+```
+
+It parses the three `deploy-output.txt` files and generates one `clash.yaml` with:
+
+- **3 proxies** — one per server, named `dev-<ip>`, `work-<ip>`, `video-<ip>`
+- **3 proxy groups** — `Dev`, `Work`, `Video`. Each group lists its dedicated node first, with the other two as fallbacks, plus DIRECT.
+- **Purpose-based routing rules:**
+
+| Priority | Category | Group | Rationale |
+|---|---|---|---|
+| 1 | Private/LAN | DIRECT | RFC1918, .local, .lan |
+| 2 | Ads | REJECT | GEOSITE category-ads-all |
+| 3 | AI services | Dev | OpenAI, Anthropic, Perplexity, Gemini |
+| 4 | Dev tools | Dev | GitHub, Go, npm, Docker, PyPI, crates.io, Homebrew, etc. |
+| 5 | Streaming | Video | YouTube, Netflix, Spotify, Twitch, Disney+, HBO, etc. |
+| 6 | Google | Work | GEOSITE google |
+| 7 | Social media | Work | Twitter, Facebook, Telegram, Reddit, Discord, etc. |
+| 8 | News & knowledge | Work | Wikipedia, NYT, BBC, Reuters, archive.org |
+| 9 | Cloud & CDN | Dev | CloudFront, Vercel, Netlify, Cloudflare, Firebase, etc. |
+| 10 | Apple | DIRECT | Accessible from China |
+| 11 | Microsoft | DIRECT | Accessible (LinkedIn overridden to Work above) |
+| 12 | China domestic | DIRECT | Baidu, Tencent, Taobao, JD, DeepSeek, Qwen, etc. |
+| 13 | China domains/IPs | DIRECT | GEOSITE cn + GEOIP CN |
+| 14 | Default | Work | MATCH — everything else |
+
+The fallback ordering in each group means if the dedicated node goes down, traffic automatically falls back to another node rather than failing entirely.
 
 ## 9. Security Posture
 
@@ -152,8 +194,7 @@ Each server produces its own `clash.yaml`. The user imports all three into Clash
 
 ## 10. Known Limitations
 
-- **Single IP per node** — if the GFW blocks the server IP, the node is dead. No CDN relay or domain fronting.
-- **No automatic failover** — the Clash config has a single node per file. Multi-node failover requires the user to combine configs.
+- **Single IP per node** — if the GFW blocks the server IP, the node is dead. No CDN relay or domain fronting. The combined config provides fallback to other nodes, but not automatic failover.
 - **Self-signed certs not used** — Reality doesn't need certs (it borrows from the target). But this means no HTTPS subscription endpoint. Client configs must be copied manually (scp).
 - **IPv4 only** — IP detection and share links assume IPv4. IPv6 is not handled.
 
