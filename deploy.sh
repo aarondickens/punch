@@ -187,6 +187,7 @@ services:
   sing-box-reality:
     image: ${SINGBOX_IMAGE}
     container_name: sing-box-reality
+    command: ["run", "-c", "/etc/sing-box/config.json"]
     network_mode: host
     volumes:
       - ${BASE_DIR}/reality/config.json:/etc/sing-box/config.json:ro

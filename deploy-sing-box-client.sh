@@ -88,20 +88,17 @@ cat >"$CONFIG_FILE" <<EOF
   "dns": {
     "servers": [
       {
+        "type": "tls",
         "tag": "google",
-        "address": "tls://8.8.8.8",
+        "server": "8.8.8.8",
+        "server_port": 853,
         "detour": "proxy"
       },
       {
+        "type": "udp",
         "tag": "local",
-        "address": "223.5.5.5",
-        "detour": "direct"
-      }
-    ],
-    "rules": [
-      {
-        "outbound": "any",
-        "server": "local"
+        "server": "223.5.5.5",
+        "server_port": 53
       }
     ],
     "strategy": "prefer_ipv4"
@@ -139,21 +136,14 @@ cat >"$CONFIG_FILE" <<EOF
     {
       "type": "direct",
       "tag": "direct"
-    },
-    {
-      "type": "block",
-      "tag": "block"
-    },
-    {
-      "type": "dns",
-      "tag": "dns-out"
     }
   ],
   "route": {
+    "default_domain_resolver": "local",
     "rules": [
       {
         "protocol": "dns",
-        "outbound": "dns-out"
+        "action": "hijack-dns"
       },
       {
         "ip_is_private": true,
@@ -189,6 +179,7 @@ services:
   sing-box-client:
     image: ${SINGBOX_IMAGE}
     container_name: ${CONTAINER_NAME}
+    command: ["run", "-c", "/etc/sing-box/config.json"]
     ports:
       - "127.0.0.1:${LISTEN_PORT}:${LISTEN_PORT}"
     volumes:
