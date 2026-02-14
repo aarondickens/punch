@@ -18,6 +18,8 @@ The GFW (Great Firewall of China) blocks or throttles access to a wide range of 
 
 `gen-clash.sh` runs locally on your Mac and combines credentials from multiple servers into a single Clash Verge (mihomo) config with purpose-based routing.
 
+`deploy-sing-box-client.sh` runs locally on your Mac and sets up a sing-box Docker container as a local proxy — useful for terminal/CLI usage without a GUI client.
+
 Run the same script on multiple servers to create independent nodes for different purposes (dev tools, daily browsing, video streaming, etc.).
 
 ## Why VLESS-Reality
@@ -73,7 +75,30 @@ Then copy the three `deploy-output.txt` files to your Mac and generate a combine
 
 This produces a single `clash.yaml` with three proxy groups (`Dev`, `Work`, `Video`) and rules that route traffic to the right node. Import it into [Clash Verge](https://github.com/clash-verge-rev/clash-verge-rev).
 
+### Terminal proxy (sing-box client via Docker)
+
+For CLI/terminal usage without a GUI client, deploy a local sing-box container:
+
+```bash
+./deploy-sing-box-client.sh deploy-output.txt
+```
+
+Then in your terminal:
+
+```bash
+export https_proxy=http://127.0.0.1:7890
+export http_proxy=http://127.0.0.1:7890
+export all_proxy=socks5://127.0.0.1:7890
+
+# Test it:
+curl -x http://127.0.0.1:7890 https://ifconfig.me
+```
+
+Requires Docker Desktop for Mac. Config lives in `~/.config/punch-client/`.
+
 ## Management
+
+### Server
 
 ```bash
 docker compose -f /opt/punch/docker-compose.yml ps
@@ -82,7 +107,27 @@ docker compose -f /opt/punch/docker-compose.yml restart
 docker compose -f /opt/punch/docker-compose.yml down
 ```
 
-## File Layout on Server
+### Client (sing-box)
+
+```bash
+docker compose -f /opt/punch/docker-compose.yml ps
+docker compose -f /opt/punch/docker-compose.yml logs -f
+docker compose -f /opt/punch/docker-compose.yml restart
+docker compose -f /opt/punch/docker-compose.yml down
+```
+
+### Client (sing-box)
+
+```bash
+docker compose -f ~/.config/punch-client/docker-compose.yml ps
+docker compose -f ~/.config/punch-client/docker-compose.yml logs -f
+docker compose -f ~/.config/punch-client/docker-compose.yml restart
+docker compose -f ~/.config/punch-client/docker-compose.yml down
+```
+
+## File Layout
+
+### Server
 
 ```
 /opt/punch/
@@ -90,6 +135,14 @@ docker compose -f /opt/punch/docker-compose.yml down
 │   └── config.json         # sing-box server config
 ├── docker-compose.yml
 └── deploy-output.txt       # secrets and share link
+```
+
+### Client (macOS)
+
+```
+~/.config/punch-client/
+├── config.json             # sing-box client config
+└── docker-compose.yml
 ```
 
 ## Limitations

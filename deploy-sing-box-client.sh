@@ -21,7 +21,10 @@ NC='\033[0m'
 
 info() { echo -e "${GREEN}[INFO]${NC}  $*"; }
 warn() { echo -e "${YELLOW}[WARN]${NC}  $*"; }
-error() { echo -e "${RED}[ERROR]${NC} $*"; exit 1; }
+error() {
+  echo -e "${RED}[ERROR]${NC} $*"
+  exit 1
+}
 
 LISTEN_PORT=7890
 BASE_DIR="$HOME/.config/punch-client"
@@ -173,8 +176,8 @@ EOF
 # ─────────────────────────────────────────────
 info "Validating config..."
 docker run --rm -v "${CONFIG_FILE}:/etc/sing-box/config.json:ro" \
-  "$SINGBOX_IMAGE" check -c /etc/sing-box/config.json \
-  || error "Config validation failed."
+  "$SINGBOX_IMAGE" check -c /etc/sing-box/config.json ||
+  error "Config validation failed."
 info "Config is valid."
 
 # ─────────────────────────────────────────────

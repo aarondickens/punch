@@ -24,26 +24,26 @@ error() {
 
 BASE_DIR="/opt/punch"
 SINGBOX_IMAGE="ghcr.io/sagernet/sing-box:latest"
-REALITY_SNI="www.microsoft.com"
+REALITY_SNI="archive.ubuntu.com"
 
 # Parse --role flag
 ROLE=""
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    --role)
-      ROLE="$2"
-      shift 2
-      ;;
-    *)
-      error "Unknown option: $1. Usage: deploy.sh [--role dev|work|video]"
-      ;;
+  --role)
+    ROLE="$2"
+    shift 2
+    ;;
+  *)
+    error "Unknown option: $1. Usage: deploy.sh [--role dev|work|video]"
+    ;;
   esac
 done
 
 if [[ -n "$ROLE" ]]; then
   case "$ROLE" in
-    dev|work|video) ;;
-    *) error "Invalid role: $ROLE. Must be one of: dev, work, video" ;;
+  dev | work | video) ;;
+  *) error "Invalid role: $ROLE. Must be one of: dev, work, video" ;;
   esac
   info "Role: $ROLE"
 fi
@@ -244,7 +244,7 @@ echo -e "${CYAN}        Punch VLESS-Reality — Deployment Complete          ${N
 echo -e "${CYAN}════════════════════════════════════════════════════════════${NC}"
 echo ""
 if [[ -n "$ROLE" ]]; then
-echo -e "${GREEN}Role:${NC}                 ${ROLE}"
+  echo -e "${GREEN}Role:${NC}                 ${ROLE}"
 fi
 echo -e "${GREEN}Server IP:${NC}            ${SERVER_IP}"
 echo -e "${GREEN}Port:${NC}                 443/tcp"

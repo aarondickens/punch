@@ -13,11 +13,12 @@ punch — a VLESS-Reality proxy deployer. Single-script deployment on Ubuntu 24.
 
 ```
 punch/
-├── deploy.sh      # Deployment script (run on target server as root)
-├── gen-clash.sh   # Generate combined Clash config from 3 deploy outputs (run locally)
-├── CLAUDE.md      # This file
-├── DESIGN.md      # Architecture notes
-└── README.md      # Project overview
+├── deploy.sh                  # Deployment script (run on target server as root)
+├── gen-clash.sh               # Generate combined Clash config from 3 deploy outputs (run locally)
+├── deploy-sing-box-client.sh  # Deploy sing-box client via Docker on macOS (run locally)
+├── CLAUDE.md                  # This file
+├── DESIGN.md                  # Architecture notes
+└── README.md                  # Project overview
 ```
 
 ## Deployment
@@ -44,6 +45,17 @@ The `--role` flag labels the node in deploy-output.txt and share links.
 
 Generates a combined `clash.yaml` with three proxy groups (Dev, Work, Video) and purpose-based routing rules.
 
+## Terminal Proxy (sing-box client)
+
+```bash
+# On your Mac, with a deploy-output.txt from any server:
+./deploy-sing-box-client.sh deploy-output.txt
+```
+
+Deploys a sing-box Docker container locally, exposing HTTP+SOCKS5 on `127.0.0.1:7890`. Requires Docker Desktop for Mac.
+
+## deploy.sh Details
+
 The script:
 1. Installs Docker + Compose if missing
 2. Enables BBR congestion control
@@ -55,15 +67,28 @@ The script:
 ## Managing the Deployment
 
 ```bash
-# On the target server:
+# Server:
 docker compose -f /opt/punch/docker-compose.yml ps
 docker compose -f /opt/punch/docker-compose.yml logs -f
 docker compose -f /opt/punch/docker-compose.yml restart
 docker compose -f /opt/punch/docker-compose.yml down
+
+# Client (macOS):
+docker compose -f ~/.config/punch-client/docker-compose.yml ps
+docker compose -f ~/.config/punch-client/docker-compose.yml logs -f
+docker compose -f ~/.config/punch-client/docker-compose.yml restart
+docker compose -f ~/.config/punch-client/docker-compose.yml down
 ```
 
-## Key Paths on Target Server
+## Key Paths
+
+### Server
 
 - `/opt/punch/reality/config.json` — sing-box server config
 - `/opt/punch/docker-compose.yml` — docker-compose file
 - `/opt/punch/deploy-output.txt` — deployment secrets and share link
+
+### Client (macOS)
+
+- `~/.config/punch-client/config.json` — sing-box client config
+- `~/.config/punch-client/docker-compose.yml` — docker-compose file

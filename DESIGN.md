@@ -184,6 +184,35 @@ It parses the three `deploy-output.txt` files and generates one `clash.yaml` wit
 
 The fallback ordering in each group means if the dedicated node goes down, traffic automatically falls back to another node rather than failing entirely.
 
+### 8.2 Terminal Client: deploy-sing-box-client.sh
+
+For CLI/terminal usage without a GUI client like Clash Verge, `deploy-sing-box-client.sh` sets up a local sing-box Docker container on macOS:
+
+```bash
+./deploy-sing-box-client.sh deploy-output.txt
+```
+
+It parses a single `deploy-output.txt` and:
+
+1. Writes a sing-box client config to `~/.config/punch-client/config.json`
+2. Validates the config via `docker run`
+3. Writes a `docker-compose.yml` alongside the config
+4. Starts the container, exposing `127.0.0.1:7890` (HTTP + SOCKS5 mixed inbound)
+
+The client config is intentionally simple — no routing rules, no rule-based splitting. All traffic goes through the VLESS proxy except private IPs (which go direct). This is a terminal proxy, not a system-wide rule engine.
+
+Key differences from the Clash config:
+
+| Aspect | Clash (gen-clash.sh) | sing-box client (deploy-sing-box-client.sh) |
+|---|---|---|
+| Input | 3 deploy-output.txt files | 1 deploy-output.txt file |
+| Routing | Purpose-based rules, 3 proxy groups | All traffic → proxy, private IPs → direct |
+| DNS | fake-ip with domestic/foreign fallback | DoT via proxy, local for bootstrap |
+| Runtime | Clash Verge GUI app | Docker container |
+| Use case | System-wide proxy with GUI | Terminal/CLI proxy |
+
+The container binds only to `127.0.0.1:7890` (not exposed to LAN). Inside the container, the inbound listens on `::` so Docker's port mapping works correctly.
+
 ## 9. Security Posture
 
 - **No web panel** — no 3X-UI or similar. Pure config files minimize attack surface.
@@ -198,7 +227,9 @@ The fallback ordering in each group means if the dedicated node goes down, traff
 - **Self-signed certs not used** — Reality doesn't need certs (it borrows from the target). But this means no HTTPS subscription endpoint. Client configs must be copied manually (scp).
 - **IPv4 only** — IP detection and share links assume IPv4. IPv6 is not handled.
 
-## 11. File Layout on Server
+## 11. File Layout
+
+### Server
 
 ```
 /opt/punch/
@@ -206,4 +237,12 @@ The fallback ordering in each group means if the dedicated node goes down, traff
 │   └── config.json         # sing-box server config
 ├── docker-compose.yml      # Container orchestration
 └── deploy-output.txt       # Secrets and share link
+```
+
+### Client (macOS)
+
+```
+~/.config/punch-client/
+├── config.json             # sing-box client config
+└── docker-compose.yml      # Container orchestration
 ```
