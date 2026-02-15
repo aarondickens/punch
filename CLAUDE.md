@@ -7,14 +7,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-punch — a VLESS-Reality proxy deployer. Single-script deployment on Ubuntu 24.04. Designed to be run on multiple servers for different purposes (e.g. dev tools, daily browsing, video streaming).
+punch — a VLESS-Reality proxy deployer. Single-script deployment on Ubuntu 24.04. Designed to be run on multiple servers for different purposes (e.g. daily browsing, video streaming).
 
 ## Repository Structure
 
 ```
 punch/
 ├── deploy.sh                  # Deployment script (run on target server as root)
-├── gen-clash.sh               # Generate combined Clash config from 3 deploy outputs (run locally)
+├── gen-clash.sh               # Generate combined Clash config from 2 deploy outputs (run locally)
 ├── deploy-sing-box-client.sh  # Deploy sing-box client via Docker on macOS (run locally)
 ├── CLAUDE.md                  # This file
 ├── DESIGN.md                  # Architecture notes
@@ -28,7 +28,6 @@ punch/
 sudo ./deploy.sh
 
 # With role (for multi-server setup):
-sudo ./deploy.sh --role dev
 sudo ./deploy.sh --role work
 sudo ./deploy.sh --role video
 ```
@@ -40,10 +39,10 @@ The `--role` flag labels the node in deploy-output.txt and share links.
 
 ```bash
 # On your Mac, after collecting deploy-output.txt from each server:
-./gen-clash.sh dev-output.txt work-output.txt video-output.txt
+./gen-clash.sh work-output.txt video-output.txt
 ```
 
-Generates a combined `clash.yaml` with three proxy groups (Dev, Work, Video) and purpose-based routing rules.
+Generates a combined `clash.yaml` with two proxy groups (Work, Video) and purpose-based routing rules.
 
 ## Terminal Proxy (sing-box client)
 

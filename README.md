@@ -20,7 +20,7 @@ The GFW (Great Firewall of China) blocks or throttles access to a wide range of 
 
 `deploy-sing-box-client.sh` runs locally on your Mac and sets up a sing-box Docker container as a local proxy — useful for terminal/CLI usage without a GUI client.
 
-Run the same script on multiple servers to create independent nodes for different purposes (dev tools, daily browsing, video streaming, etc.).
+Run the same script on multiple servers to create independent nodes for different purposes (daily browsing, video streaming, etc.).
 
 ## Why VLESS-Reality
 
@@ -52,28 +52,25 @@ sudo ./deploy.sh
 
 The script prints a VLESS share link and saves deployment credentials to `/opt/punch/deploy-output.txt`.
 
-### Three servers (dev / work / video)
+### Two servers (work / video)
 
 Deploy each server with a role:
 
 ```bash
-# Server 1 — dev tools (GitHub, Docker, npm, AI services)
-sudo ./deploy.sh --role dev
-
-# Server 2 — daily work (Google, social media, news)
+# Server 1 — daily work (Google, social media, news, dev tools, AI services)
 sudo ./deploy.sh --role work
 
-# Server 3 — video streaming (YouTube, Netflix, Twitch)
+# Server 2 — video streaming (YouTube, Netflix, Twitch)
 sudo ./deploy.sh --role video
 ```
 
-Then copy the three `deploy-output.txt` files to your Mac and generate a combined Clash config:
+Then copy the two `deploy-output.txt` files to your Mac and generate a combined Clash config:
 
 ```bash
-./gen-clash.sh dev-output.txt work-output.txt video-output.txt
+./gen-clash.sh work-output.txt video-output.txt
 ```
 
-This produces a single `clash.yaml` with three proxy groups (`Dev`, `Work`, `Video`) and rules that route traffic to the right node. Import it into [Clash Verge](https://github.com/clash-verge-rev/clash-verge-rev).
+This produces a single `clash.yaml` with two proxy groups (`Work`, `Video`) and rules that route traffic to the right node. Import it into [Clash Verge](https://github.com/clash-verge-rev/clash-verge-rev).
 
 ### Terminal proxy (sing-box client via Docker)
 
