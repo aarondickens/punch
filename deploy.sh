@@ -24,7 +24,7 @@ error() {
 
 BASE_DIR="/opt/punch"
 SINGBOX_IMAGE="ghcr.io/sagernet/sing-box:latest"
-REALITY_SNI="archive.ubuntu.com"
+REALITY_SNI="www.microsoft.com"
 
 # Parse --role flag
 ROLE=""
@@ -68,6 +68,14 @@ if ss -tlnp | grep -q ':443 '; then
   error "Port 443 is already in use. Free it before running this script."
 fi
 
+# Check time synchronization (important for Reality's max_time_difference)
+if command -v timedatectl &>/dev/null; then
+  if ! timedatectl status | grep -q "synchronized: yes"; then
+    warn "System time may not be synchronized. Reality requires accurate time."
+    warn "Consider enabling NTP: timedatectl set-ntp true"
+  fi
+fi
+
 # ─────────────────────────────────────────────
 # 3. Docker install
 # ─────────────────────────────────────────────
@@ -84,13 +92,29 @@ docker compose version &>/dev/null || error "docker compose plugin not found."
 # ─────────────────────────────────────────────
 # 4. BBR
 # ─────────────────────────────────────────────
-info "Enabling BBR congestion control..."
+info "Enabling BBR congestion control and TCP optimizations..."
 cat >/etc/sysctl.d/99-bbr.conf <<'SYSCTL'
+# BBR congestion control
 net.core.default_qdisc=fq
 net.ipv4.tcp_congestion_control=bbr
+
+# TCP optimizations for better performance and naturalness
+net.ipv4.tcp_fastopen=3
+net.ipv4.tcp_slow_start_after_idle=0
+net.ipv4.tcp_notsent_lowat=16384
+
+# Increase buffer sizes for long-distance connections
+net.core.rmem_max=16777216
+net.core.wmem_max=16777216
+net.ipv4.tcp_rmem=4096 87380 16777216
+net.ipv4.tcp_wmem=4096 65536 16777216
+
+# Reduce TIME_WAIT sockets
+net.ipv4.tcp_fin_timeout=15
+net.ipv4.tcp_tw_reuse=1
 SYSCTL
 sysctl --system &>/dev/null
-info "BBR enabled."
+info "BBR and TCP optimizations enabled."
 
 # ─────────────────────────────────────────────
 # 5. IP detection
@@ -119,9 +143,10 @@ UUID=$(docker run --rm "$SINGBOX_IMAGE" generate uuid)
 REALITY_KEYPAIR=$(docker run --rm "$SINGBOX_IMAGE" generate reality-keypair)
 REALITY_PRIVATE_KEY=$(echo "$REALITY_KEYPAIR" | grep -i 'private' | awk '{print $NF}')
 REALITY_PUBLIC_KEY=$(echo "$REALITY_KEYPAIR" | grep -i 'public' | awk '{print $NF}')
-SHORT_ID=$(openssl rand -hex 8)
 
-info "Secrets generated."
+SHORT_ID="$(openssl rand -hex 8)"
+
+info "Secrets generated (UUID, Reality keypair, short ID)."
 
 # ─────────────────────────────────────────────
 # 7. Directory scaffolding
@@ -133,14 +158,18 @@ mkdir -p "$BASE_DIR"/reality
 # 8. sing-box server config (VLESS Reality)
 # ─────────────────────────────────────────────
 info "Writing sing-box Reality config..."
+
+
 cat >"$BASE_DIR/reality/config.json" <<EOF
 {
   "log": {
-    "level": "warn"
+    "level": "info",
+    "timestamp": true 
   },
   "inbounds": [
     {
       "type": "vless",
+      "tag": "vless-in",
       "listen": "::",
       "listen_port": 443,
       "users": [
@@ -159,22 +188,29 @@ cat >"$BASE_DIR/reality/config.json" <<EOF
             "server_port": 443
           },
           "private_key": "${REALITY_PRIVATE_KEY}",
-          "short_id": [
-            "${SHORT_ID}"
-          ]
+          "short_id": ["${SHORT_ID}"],
         }
       },
-      "multiplex": {
-        "enabled": true,
-        "padding": true
-      }
     }
   ],
   "outbounds": [
     {
-      "type": "direct"
+      "type": "direct",
+      "tag": "direct"
+    },
+    {
+      "type": "block",
+      "tag": "block"
     }
-  ]
+  ],
+  "route": {
+    "rules": [
+      {
+        "inbound": "vless-in",
+        "outbound": "direct"
+      }
+    ]
+  }
 }
 EOF
 
