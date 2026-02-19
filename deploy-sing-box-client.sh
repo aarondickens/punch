@@ -205,7 +205,9 @@ EOF
 # 6. Validate config
 # ─────────────────────────────────────────────
 info "Validating config..."
-docker run --rm -v "${CONFIG_FILE}:/etc/sing-box/config.json:ro" \
+docker run --rm \
+  -v "${CONFIG_FILE}:/etc/sing-box/config.json:ro" \
+  -v "${RULES_PATH}:/etc/sing-box/rules:ro" \
   "$SINGBOX_IMAGE" check -c /etc/sing-box/config.json ||
   error "Config validation failed."
 info "Config is valid."
@@ -224,7 +226,7 @@ services:
       - "127.0.0.1:${LISTEN_PORT}:${LISTEN_PORT}"
     volumes:
       - "${CONFIG_FILE}:/etc/sing-box/config.json:ro"
-      - "${RULES_PATH}:/etc/sing-box/rules"
+      - "${RULES_PATH}:/etc/sing-box/rules:ro"
     restart: unless-stopped
     logging:
       driver: json-file

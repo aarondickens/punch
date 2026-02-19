@@ -84,6 +84,10 @@ cat >"$OUTPUT" <<EOF
       {
         "rule_set": ["geosite-cn"],
         "server": "local"
+      },
+      {
+        "query_type": ["A", "AAAA"],
+        "server": "proxy-dns"
       }
     ],
     "strategy": "prefer_ipv4"
