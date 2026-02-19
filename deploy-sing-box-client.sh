@@ -119,6 +119,9 @@ cat >"$CONFIG_FILE" <<EOF
       "server_port": 443,
       "uuid": "${UUID}",
       "flow": "xtls-rprx-vision",
+      "domain_strategy": "prefer_ipv4",
+      "tcp_fast_open": true,
+      "tcp_multi_path": false,
       "tls": {
         "enabled": true,
         "server_name": "${SNI}",
@@ -151,7 +154,13 @@ cat >"$CONFIG_FILE" <<EOF
       },
       {
         "domain_suffix": [
-          "claude-code.club"
+          "claude-code.club",
+          "minimax.io",
+          "qwen.ai",
+          "deepseek.com",
+          "doubao.com",
+          "zhipuai.cn",
+          "z.ai"
         ],
         "outbound": "direct"
       }

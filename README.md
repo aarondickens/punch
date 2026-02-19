@@ -18,6 +18,8 @@ The GFW (Great Firewall of China) blocks or throttles access to a wide range of 
 
 `gen-clash.sh` runs locally on your Mac and combines credentials from multiple servers into a single Clash Verge (mihomo) config with purpose-based routing.
 
+`gen-sing-box-config.sh` runs locally and generates a sing-box JSON config from two deploy outputs — for import into sing-box GUI apps (SFI on iOS, SFA on Android, SFM on macOS). Same routing logic as the Clash config but in sing-box 1.11+ format with HTTP/SOCKS proxy mode (127.0.0.1:7890) and GFW-resistant optimizations (TCP Fast Open, prefer_ipv4 domain strategy).
+
 `deploy-sing-box-client.sh` runs locally on your Mac and sets up a sing-box Docker container as a local proxy — useful for terminal/CLI usage without a GUI client.
 
 Run the same script on multiple servers to create independent nodes for different purposes (daily browsing, video streaming, etc.).
@@ -37,7 +39,7 @@ UDP-based protocols (Hysteria2) were evaluated and dropped — the GFW throttles
 - Zero config — all secrets generated at deploy time, no manual input required
 - No web panel — pure config files, minimal attack surface
 - Read-only container volumes, minimal logging (`warn` level), auto-restart
-- Client config includes fake-ip DNS to neutralize GFW DNS poisoning, with domestic/foreign nameserver fallback
+- GFW-resistant client optimizations: TCP Fast Open, prefer_ipv4 domain strategy, DNS over TLS for foreign queries
 - Routing rules split traffic: China-destined traffic goes direct, blocked services go through the proxy, ads get rejected
 
 ## Quick Start
@@ -72,6 +74,16 @@ Then copy the two `deploy-output.txt` files to your Mac and generate a combined 
 
 This produces a single `clash.yaml` with two proxy groups (`Work`, `Video`) and rules that route traffic to the right node. Import it into [Clash Verge](https://github.com/clash-verge-rev/clash-verge-rev).
 
+### sing-box app (SFI/SFA/SFM)
+
+Generate a sing-box config for GUI apps:
+
+```bash
+./gen-sing-box-config.sh work-output.txt video-output.txt
+```
+
+This produces `sing-box.json` with HTTP/SOCKS proxy inbound on 127.0.0.1:7890 (for Chrome, not system-wide), GFW-resistant optimizations (TCP Fast Open, prefer_ipv4), and the same Work/Video routing rules. Import it into [SFI](https://apps.apple.com/app/sing-box/id6451272673) (iOS), SFA (Android), or SFM (macOS). Configure Chrome to use the proxy via system settings or SwitchyOmega extension.
+
 ### Terminal proxy (sing-box client via Docker)
 
 For CLI/terminal usage without a GUI client, deploy a local sing-box container:
@@ -91,20 +103,11 @@ export all_proxy=socks5://127.0.0.1:7890
 curl -x http://127.0.0.1:7890 https://ifconfig.me
 ```
 
-Requires Docker Desktop for Mac. Config lives in `~/.config/punch-client/`.
+Requires Docker Desktop for Mac. Config lives in `~/.config/punch-client/`. Includes GFW-resistant optimizations: TCP Fast Open, prefer_ipv4 domain strategy.
 
 ## Management
 
 ### Server
-
-```bash
-docker compose -f /opt/punch/docker-compose.yml ps
-docker compose -f /opt/punch/docker-compose.yml logs -f
-docker compose -f /opt/punch/docker-compose.yml restart
-docker compose -f /opt/punch/docker-compose.yml down
-```
-
-### Client (sing-box)
 
 ```bash
 docker compose -f /opt/punch/docker-compose.yml ps

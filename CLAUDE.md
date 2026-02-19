@@ -15,6 +15,7 @@ punch — a VLESS-Reality proxy deployer. Single-script deployment on Ubuntu 24.
 punch/
 ├── deploy.sh                  # Deployment script (run on target server as root)
 ├── gen-clash.sh               # Generate combined Clash config from 2 deploy outputs (run locally)
+├── gen-sing-box-config.sh     # Generate sing-box client config from 2 deploy outputs (run locally)
 ├── deploy-sing-box-client.sh  # Deploy sing-box client via Docker on macOS (run locally)
 ├── CLAUDE.md                  # This file
 ├── DESIGN.md                  # Architecture notes
@@ -44,6 +45,18 @@ The `--role` flag labels the node in deploy-output.txt and share links.
 
 Generates a combined `clash.yaml` with two proxy groups (Work, Video) and purpose-based routing rules.
 
+## sing-box App Config (SFI/SFA/SFM)
+
+```bash
+# On your Mac, after collecting deploy-output.txt from each server:
+./gen-sing-box-config.sh work-output.txt video-output.txt
+```
+
+Generates `sing-box.json` for import into sing-box GUI apps (SFI/SFA/SFM). Uses sing-box 1.11+ format with:
+- Mixed inbound (HTTP+SOCKS proxy on 127.0.0.1:7890) - for Chrome, not system-wide
+- GFW-resistant optimizations: TCP Fast Open, prefer_ipv4 domain strategy
+- Purpose-based routing (Work/Video groups with automatic failover)
+
 ## Terminal Proxy (sing-box client)
 
 ```bash
@@ -52,6 +65,7 @@ Generates a combined `clash.yaml` with two proxy groups (Work, Video) and purpos
 ```
 
 Deploys a sing-box Docker container locally, exposing HTTP+SOCKS5 on `127.0.0.1:7890`. Requires Docker Desktop for Mac.
+Includes GFW-resistant optimizations: TCP Fast Open, prefer_ipv4 domain strategy.
 
 ## deploy.sh Details
 
