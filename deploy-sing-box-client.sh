@@ -26,9 +26,10 @@ error() {
   exit 1
 }
 
-LISTEN_PORT=7890
+LISTEN_PORT=7891
 BASE_DIR="$HOME/.config/punch-client"
 CONFIG_FILE="$BASE_DIR/config.json"
+RULES_PATH="$BASE_DIR/rules"
 COMPOSE_FILE="$BASE_DIR/docker-compose.yml"
 CONTAINER_NAME="punch-sing-box-client"
 SINGBOX_IMAGE="ghcr.io/sagernet/sing-box:latest"
@@ -102,17 +103,13 @@ cat >"$CONFIG_FILE" <<EOF
         "server_port": 53
       }
     ],
-    rules: [
-      {
-        "outbounds": "any",
-        "server": "local"
-      },
+    "rules": [
       {
         "query_type": ["PTR"],
         "server": "local"
       },
       {
-        "rule_set": "geosite_cn",
+        "rule_set": ["geosite-cn"],
         "server": "local"
       },
       {
@@ -184,6 +181,21 @@ cat >"$CONFIG_FILE" <<EOF
         "outbound": "direct"
       }
     ],
+    "rule_set": [
+      {
+        "tag": "geosite-cn",
+        "type": "local",
+        "format": "binary",
+        "path": "/etc/sing-box/rules/geosite-cn.srs",
+      },
+      {
+        "tag": "geoip-cn",
+        "type": "local",
+        "format": "binary",
+        "path": "/etc/sing-box/rules/geoip-cn.srs",
+      }
+    ],
+
     "final": "proxy"
   }
 }
@@ -212,6 +224,7 @@ services:
       - "127.0.0.1:${LISTEN_PORT}:${LISTEN_PORT}"
     volumes:
       - "${CONFIG_FILE}:/etc/sing-box/config.json:ro"
+      - "${RULES_PATH}:/etc/sing-box/rules"
     restart: unless-stopped
     logging:
       driver: json-file
