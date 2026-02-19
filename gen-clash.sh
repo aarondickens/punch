@@ -15,7 +15,10 @@ GREEN='\033[0;32m'
 NC='\033[0m'
 
 info() { echo -e "${GREEN}[INFO]${NC}  $*"; }
-error() { echo -e "${RED}[ERROR]${NC} $*"; exit 1; }
+error() {
+  echo -e "${RED}[ERROR]${NC} $*"
+  exit 1
+}
 
 [[ $# -eq 2 ]] || error "Usage: $0 <work-output.txt> <video-output.txt>"
 

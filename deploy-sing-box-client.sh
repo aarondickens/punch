@@ -83,7 +83,8 @@ mkdir -p "$BASE_DIR"
 cat >"$CONFIG_FILE" <<EOF
 {
   "log": {
-    "level": "warn"
+    "level": "info",
+    "timestamp": true
   },
   "dns": {
     "servers": [
@@ -99,6 +100,24 @@ cat >"$CONFIG_FILE" <<EOF
         "tag": "local",
         "server": "223.5.5.5",
         "server_port": 53
+      }
+    ],
+    rules: [
+      {
+        "outbounds": "any",
+        "server": "local"
+      },
+      {
+        "query_type": ["PTR"],
+        "server": "local"
+      },
+      {
+        "rule_set": "geosite_cn",
+        "server": "local"
+      },
+      {
+        "query_type": ["A", "AAAA"],
+        "server": "google"
       }
     ],
     "strategy": "prefer_ipv4"

@@ -64,7 +64,8 @@ OUTPUT="sing-box.json"
 cat >"$OUTPUT" <<EOF
 {
   "log": {
-    "level": "warn"
+    "level": "info",
+    "timestamp": true
   },
   "dns": {
     "servers": [
@@ -104,8 +105,6 @@ cat >"$OUTPUT" <<EOF
       "uuid": "${WORK_UUID}",
       "flow": "xtls-rprx-vision",
       "domain_strategy": "prefer_ipv4",
-      "tcp_fast_open": true,
-      "tcp_multi_path": false,
       "tls": {
         "enabled": true,
         "server_name": "${WORK_SNI}",
@@ -128,8 +127,6 @@ cat >"$OUTPUT" <<EOF
       "uuid": "${VIDEO_UUID}",
       "flow": "xtls-rprx-vision",
       "domain_strategy": "prefer_ipv4",
-      "tcp_fast_open": true,
-      "tcp_multi_path": false,
       "tls": {
         "enabled": true,
         "server_name": "${VIDEO_SNI}",
