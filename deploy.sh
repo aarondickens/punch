@@ -64,7 +64,7 @@ else
   error "Cannot detect OS (/etc/os-release not found). This script requires Ubuntu 24.04 / Debian 12."
 fi
 
-if ss -tlnp | grep -q ':443 '; then
+if ss -tlnp | grep -q ':443'; then
   error "Port 443 is already in use. Free it before running this script."
 fi
 

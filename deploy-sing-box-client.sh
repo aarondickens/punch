@@ -7,9 +7,9 @@
 #   ./deploy-sing-box-client.sh <deploy-output.txt>
 #
 # After running, use in terminal:
-#   export https_proxy=http://127.0.0.1:7890
-#   export http_proxy=http://127.0.0.1:7890
-#   export all_proxy=socks5://127.0.0.1:7890
+#   export https_proxy=http://127.0.0.1:7891
+#   export http_proxy=http://127.0.0.1:7891
+#   export all_proxy=socks5://127.0.0.1:7891
 #
 set -euo pipefail
 
@@ -80,6 +80,7 @@ fi
 # ─────────────────────────────────────────────
 info "Writing config to $CONFIG_FILE..."
 mkdir -p "$BASE_DIR"
+mkdir -p "$RULES_PATH"
 
 cat >"$CONFIG_FILE" <<EOF
 {
@@ -123,7 +124,7 @@ cat >"$CONFIG_FILE" <<EOF
     {
       "type": "mixed",
       "tag": "mixed-in",
-      "listen": "::",
+      "listen": "127.0.0.1",
       "listen_port": ${LISTEN_PORT}
     }
   ],

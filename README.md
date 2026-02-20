@@ -95,12 +95,12 @@ For CLI/terminal usage without a GUI client, deploy a local sing-box container:
 Then in your terminal:
 
 ```bash
-export https_proxy=http://127.0.0.1:7890
-export http_proxy=http://127.0.0.1:7890
-export all_proxy=socks5://127.0.0.1:7890
+export https_proxy=http://127.0.0.1:7891
+export http_proxy=http://127.0.0.1:7891
+export all_proxy=socks5://127.0.0.1:7891
 
 # Test it:
-curl -x http://127.0.0.1:7890 https://ifconfig.me
+curl -x http://127.0.0.1:7891 https://ifconfig.me
 ```
 
 Requires Docker Desktop for Mac. Config lives in `~/.config/punch-client/`. Includes GFW-resistant optimizations: TCP Fast Open, prefer_ipv4 domain strategy.

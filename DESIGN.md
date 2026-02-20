@@ -197,7 +197,7 @@ It parses a single `deploy-output.txt` and:
 1. Writes a sing-box client config to `~/.config/punch-client/config.json`
 2. Validates the config via `docker run`
 3. Writes a `docker-compose.yml` alongside the config
-4. Starts the container, exposing `127.0.0.1:7890` (HTTP + SOCKS5 mixed inbound)
+4. Starts the container, exposing `127.0.0.1:7891` (HTTP + SOCKS5 mixed inbound)
 
 The client config is intentionally simple — no routing rules, no rule-based splitting. All traffic goes through the VLESS proxy except private IPs (which go direct). This is a terminal proxy, not a system-wide rule engine.
 
@@ -211,7 +211,7 @@ Key differences from the Clash config:
 | Runtime | Clash Verge GUI app | Docker container |
 | Use case | System-wide proxy with GUI | Terminal/CLI proxy |
 
-The container binds only to `127.0.0.1:7890` (not exposed to LAN). Inside the container, the inbound listens on `::` so Docker's port mapping works correctly.
+The container binds only to `127.0.0.1:7891` (not exposed to LAN). Inside the container, the inbound listens on `::` so Docker's port mapping works correctly.
 
 ## 9. Security Posture
 

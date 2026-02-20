@@ -53,7 +53,7 @@ Generates a combined `clash.yaml` with two proxy groups (Work, Video) and purpos
 ```
 
 Generates `sing-box.json` for import into sing-box GUI apps (SFI/SFA/SFM). Uses sing-box 1.11+ format with:
-- Mixed inbound (HTTP+SOCKS proxy on 127.0.0.1:7890) - for Chrome, not system-wide
+- Mixed inbound (HTTP+SOCKS proxy on 127.0.0.1:7891) - for Chrome, not system-wide
 - GFW-resistant optimizations: TCP Fast Open, prefer_ipv4 domain strategy
 - Purpose-based routing (Work/Video groups with automatic failover)
 
@@ -64,7 +64,7 @@ Generates `sing-box.json` for import into sing-box GUI apps (SFI/SFA/SFM). Uses 
 ./deploy-sing-box-client.sh deploy-output.txt
 ```
 
-Deploys a sing-box Docker container locally, exposing HTTP+SOCKS5 on `127.0.0.1:7890`. Requires Docker Desktop for Mac.
+Deploys a sing-box Docker container locally, exposing HTTP+SOCKS5 on `127.0.0.1:7891`. Requires Docker Desktop for Mac.
 Includes GFW-resistant optimizations: TCP Fast Open, prefer_ipv4 domain strategy.
 
 ## deploy.sh Details
