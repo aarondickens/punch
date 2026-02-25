@@ -20,6 +20,8 @@ The GFW (Great Firewall of China) blocks or throttles access to a wide range of 
 
 `gen-sing-box-config.sh` runs locally and generates a sing-box JSON config from two deploy outputs — for import into sing-box GUI apps (SFI on iOS, SFA on Android, SFM on macOS). Same routing logic as the Clash config but in sing-box 1.11+ format with HTTP/SOCKS proxy mode (127.0.0.1:7890) and GFW-resistant optimizations (TCP Fast Open, prefer_ipv4 domain strategy).
 
+`gen-shadowrocket-config.sh` runs locally and generates a Shadowrocket `.conf` file from two deploy outputs — for import into [Shadowrocket](https://apps.apple.com/app/shadowrocket/id932747118) on iOS. Same routing logic as the Clash config but using Shadowrocket-native syntax with RULE-SET from blackmatrix7 for category matching.
+
 `deploy-sing-box-client.sh` runs locally on your Mac and sets up a sing-box Docker container as a local proxy — useful for terminal/CLI usage without a GUI client.
 
 Run the same script on multiple servers to create independent nodes for different purposes (daily browsing, video streaming, etc.).
@@ -83,6 +85,16 @@ Generate a sing-box config for GUI apps:
 ```
 
 This produces `sing-box.json` with HTTP/SOCKS proxy inbound on 127.0.0.1:7890 (for Chrome, not system-wide), GFW-resistant optimizations (TCP Fast Open, prefer_ipv4), and the same Work/Video routing rules. Import it into [SFI](https://apps.apple.com/app/sing-box/id6451272673) (iOS), SFA (Android), or SFM (macOS). Configure Chrome to use the proxy via system settings or SwitchyOmega extension.
+
+### Shadowrocket (iOS)
+
+Generate a Shadowrocket config for iOS:
+
+```bash
+./gen-shadowrocket-config.sh work-output.txt video-output.txt
+```
+
+This produces `shadowrocket.conf` with VLESS Reality proxy nodes, Work/Video proxy groups, and comprehensive routing rules using RULE-SET from blackmatrix7 (Ads, OpenAI, GitHub, YouTube, Netflix, Google, Telegram, Twitter, Facebook, Apple, Microsoft). Import it into [Shadowrocket](https://apps.apple.com/app/shadowrocket/id932747118) via file sharing, AirDrop, or iCloud.
 
 ### Terminal proxy (sing-box client via Docker)
 

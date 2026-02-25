@@ -13,13 +13,14 @@ punch — a VLESS-Reality proxy deployer. Single-script deployment on Ubuntu 24.
 
 ```
 punch/
-├── deploy.sh                  # Deployment script (run on target server as root)
-├── gen-clash.sh               # Generate combined Clash config from 2 deploy outputs (run locally)
-├── gen-sing-box-config.sh     # Generate sing-box client config from 2 deploy outputs (run locally)
-├── deploy-sing-box-client.sh  # Deploy sing-box client via Docker on macOS (run locally)
-├── CLAUDE.md                  # This file
-├── DESIGN.md                  # Architecture notes
-└── README.md                  # Project overview
+├── deploy.sh                      # Deployment script (run on target server as root)
+├── gen-clash.sh                   # Generate combined Clash config from 2 deploy outputs (run locally)
+├── gen-sing-box-config.sh         # Generate sing-box client config from 2 deploy outputs (run locally)
+├── gen-shadowrocket-config.sh     # Generate Shadowrocket .conf for iOS from 2 deploy outputs (run locally)
+├── deploy-sing-box-client.sh      # Deploy sing-box client via Docker on macOS (run locally)
+├── CLAUDE.md                      # This file
+├── DESIGN.md                      # Architecture notes
+└── README.md                      # Project overview
 ```
 
 ## Deployment
@@ -56,6 +57,18 @@ Generates `sing-box.json` for import into sing-box GUI apps (SFI/SFA/SFM). Uses 
 - Mixed inbound (HTTP+SOCKS proxy on 127.0.0.1:7891) - for Chrome, not system-wide
 - GFW-resistant optimizations: TCP Fast Open, prefer_ipv4 domain strategy
 - Purpose-based routing (Work/Video groups with automatic failover)
+
+## Shadowrocket Config (iOS)
+
+```bash
+# On your Mac, after collecting deploy-output.txt from each server:
+./gen-shadowrocket-config.sh work-output.txt video-output.txt
+```
+
+Generates `shadowrocket.conf` for import into Shadowrocket on iOS. Uses VLESS Reality proxy lines with:
+- RULE-SET from blackmatrix7 for category-based routing (Ads, OpenAI, GitHub, YouTube, Netflix, Google, etc.)
+- Purpose-based routing (Work/Video groups with manual selection)
+- Comprehensive DOMAIN-SUFFIX rules matching gen-clash.sh
 
 ## Terminal Proxy (sing-box client)
 
