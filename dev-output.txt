@@ -1,0 +1,15 @@
+Punch VLESS-Reality — Deployment Summary
+Generated: 2026-02-19 13:07:46 UTC
+
+Role:                 dev
+Server IP:            49.51.137.17
+Port:                 443/tcp
+SNI:                  www.microsoft.com
+
+UUID:                 881fc3ce-a4cb-4c63-b434-17ad0e886fb8
+Reality Public Key:   Ewslw8ilLQcaKPkCpC0kBFu1tckKxAs-pD5Lhuq14k8
+Reality Private Key:  OOmffWSP7Y4rp75kuFk5IQT2-6skuet_TtG0FXUH4GU
+Short ID:             fdddbfbac9dd599e
+
+Share Link:
+  vless://881fc3ce-a4cb-4c63-b434-17ad0e886fb8@49.51.137.17:443?encryption=none&flow=xtls-rprx-vision&security=reality&pbk=Ewslw8ilLQcaKPkCpC0kBFu1tckKxAs-pD5Lhuq14k8&sid=fdddbfbac9dd599e&sni=www.microsoft.com&fp=chrome&type=tcp#dev-49.51.137.17
