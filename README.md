@@ -20,7 +20,7 @@ The GFW (Great Firewall of China) blocks or throttles access to a wide range of 
 
 `gen-sing-box-config.sh` runs locally and generates a sing-box JSON config from two deploy outputs — for import into sing-box GUI apps (SFI on iOS, SFA on Android, SFM on macOS). Same routing logic as the Clash config but in sing-box 1.11+ format with HTTP/SOCKS proxy mode (127.0.0.1:7890) and GFW-resistant optimizations (TCP Fast Open, prefer_ipv4 domain strategy).
 
-`gen-shadowrocket-config.sh` runs locally and generates a Shadowrocket `.conf` file from two deploy outputs — for import into [Shadowrocket](https://apps.apple.com/app/shadowrocket/id932747118) on iOS. Same routing logic as the Clash config but using Shadowrocket-native syntax with RULE-SET from blackmatrix7 for category matching.
+`gen-shadowrocket-config.sh` runs locally and generates a Shadowrocket `.conf` file from one or two deploy outputs — for import into [Shadowrocket](https://apps.apple.com/app/shadowrocket/id932747118) on iOS. Same routing logic as the Clash config but using Shadowrocket-native syntax with RULE-SET from blackmatrix7 for category matching.
 
 `deploy-sing-box-client.sh` runs locally on your Mac and sets up a sing-box Docker container as a local proxy — useful for terminal/CLI usage without a GUI client.
 
@@ -91,10 +91,12 @@ This produces `sing-box.json` with HTTP/SOCKS proxy inbound on 127.0.0.1:7890 (f
 Generate a Shadowrocket config for iOS:
 
 ```bash
+./gen-shadowrocket-config.sh deploy-output.txt
+# or
 ./gen-shadowrocket-config.sh work-output.txt video-output.txt
 ```
 
-This produces `shadowrocket.conf` with VLESS Reality proxy nodes, Work/Video proxy groups, and comprehensive routing rules using RULE-SET from blackmatrix7 (Ads, OpenAI, GitHub, YouTube, Netflix, Google, Telegram, Twitter, Facebook, Apple, Microsoft). Import it into [Shadowrocket](https://apps.apple.com/app/shadowrocket/id932747118) via file sharing, AirDrop, or iCloud.
+This produces `shadowrocket.conf` with either one VLESS Reality proxy node and a simple `Proxy` group, or two nodes with `Work` / `Video` groups, plus comprehensive routing rules using RULE-SET from blackmatrix7 (Ads, OpenAI, GitHub, YouTube, Netflix, Google, Telegram, Twitter, Facebook, Apple, Microsoft). Import it into [Shadowrocket](https://apps.apple.com/app/shadowrocket/id932747118) via file sharing, AirDrop, or iCloud.
 
 ### Terminal proxy (sing-box client via Docker)
 
